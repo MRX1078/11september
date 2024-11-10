@@ -4,6 +4,11 @@ import Header from '../Header/Header';
 import { useState, useEffect } from 'react';
 import Store from '../../store/store';
 
+import { Radar } from 'react-chartjs-2';
+import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+
 const store = new Store();
 
 
@@ -60,7 +65,7 @@ const HRPage = () => {
     async function fetchData() {
       try {
         const [personalityRes, vacancyRes] = await Promise.all([
-          store.getPersonalityList(10, 0),
+          store.getPersonalityList(100, 0),
           store.getVacancyList(100, 0),
         ]);
 
@@ -187,6 +192,7 @@ const HRPage = () => {
               <VStack spacing={6} align="stretch">
                 {personalityList.length > 0 ? (
                   personalityList.map((candidate:Candidate, index:number) => {
+
                     // Группируем параметры по моделям OCEAN и MBTI
                     const groupedModels = candidate.personality_models.reduce((acc: any, model: PersonalityModel)  => {
                       if (!acc[model.model]) {
@@ -202,20 +208,47 @@ const HRPage = () => {
                           <HStack>
                             <Text fontWeight="bold">Кандидат #{index + 1} (ID: {candidate.id})</Text>
                           </HStack>
-
                           <Box>
                             <Text fontWeight="bold">Модели OCEAN:</Text>
                             {groupedModels['OCEAN'] ? (
-                              groupedModels['OCEAN'].map((param: any, idx: number) => (
-                                <Badge key={idx} colorScheme="blue" mr={2}>
-                                  {param.parameter}: {param.confidence.toFixed(2)}
-                                </Badge>
-                              ))
+                              <>
+                                <Box width="250px" height="250px">
+                                  <Radar
+                                    data={{
+                                      labels: groupedModels['OCEAN'].map((param: any) => param.parameter),
+                                      datasets: [{
+                                        label: 'Соответствие',
+                                        data: groupedModels['OCEAN'].map((param: any) => parseFloat(param.confidence.toFixed(2))),
+                                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 2,
+                                      }]
+                                    }}
+                                    options={{
+                                      scales: {
+                                        r: {
+                                          beginAtZero: true,
+                                          max: 1,
+                                          ticks: {
+                                            stepSize: 0.2,
+                                          },
+                                        },
+                                      },
+                                      maintainAspectRatio: false,
+                                    }}
+                                  />
+                                </Box>
+
+                                {groupedModels['OCEAN'].map((param: any, idx: number) => (
+                                  <Badge key={idx} colorScheme="blue" mr={2}>
+                                    {param.parameter}: {param.confidence.toFixed(2)}
+                                  </Badge>
+                                ))}
+                              </>
                             ) : (
                               <Text>Нет данных для OCEAN</Text>
                             )}
                           </Box>
-
                           <Box>
   <Text fontWeight="bold">Модели MBTI:</Text>
   {groupedModels['MBTI'] ? (

@@ -3,6 +3,11 @@ import Layout from '../../Layout';
 import Header from '../Header/Header';
 import { useState, useEffect } from 'react';
 import Store from '../../store/store';
+import { Radar } from 'react-chartjs-2';
+import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+
+// Регистрация компонентов Chart.js
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 const store = new Store();
 
@@ -216,7 +221,34 @@ const PersonPage = () => {
                   {Object.entries(groupedModels).map(([model, parameters], index) => (
   <Box key={index} p={4} border="1px solid #ccc" borderRadius="md" width="100%" bg="gray.50">
     <Text fontWeight="bold" textTransform="uppercase" mb={2} color="teal.600">{model}</Text>
-
+    {model === 'OCEAN' && (
+  <Box width="300px" height="300px">
+    <Radar
+      data={{
+        labels: parameters.map(p => p.parameter),
+        datasets: [{
+          label: 'Соответствие',
+          data: parameters.map(p => parseFloat(p.confidence.toFixed(2))),
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+        }]
+      }}
+      options={{
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 1,
+            ticks: {
+              stepSize: 0.2,
+            }
+          }
+        },
+        maintainAspectRatio: false // Отключаем сохранение соотношения сторон для управления размером
+      }}
+    />
+  </Box>
+)}
     {parameters.map((param, idx) => (
       <HStack spacing={2} key={idx}>
         <Badge colorScheme="blue">Параметр: {param.parameter}</Badge>
@@ -235,6 +267,7 @@ const PersonPage = () => {
                 <Text>
                     <strong>Рекомендация:</strong> {recomendations}
                   </Text>
+                
                 </VStack>
               </AccordionPanel>
             </AccordionItem>
