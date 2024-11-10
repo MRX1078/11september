@@ -55,7 +55,7 @@ const PersonPage = () => {
       const formData = new FormData();
       if (resumeFile) formData.append('pdf_file', resumeFile);
       if (videoFile) formData.append('video_file', videoFile);
-      formData.append('motivation_letter', coverLetter || '');
+      formData.append('motivation_letter', coverLetter || 'Без мотивационного письма');
 
       const response = await store.uploadCandidateData(formData);
       setResults(response);
