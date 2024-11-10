@@ -1,4 +1,4 @@
-import {  Box, Button, Input, VStack, Text, useToast, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, HStack, Badge } from '@chakra-ui/react';
+import { Box, Button, Input, VStack, Text, useToast, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, HStack, Badge } from '@chakra-ui/react';
 import Layout from '../../Layout';
 import Header from '../Header/Header';
 import { useState, useEffect } from 'react';
@@ -6,13 +6,32 @@ import Store from '../../store/store';
 
 const store = new Store();
 
+interface PersonalityModel {
+  id: string;
+  model: string;
+  parameter: string;
+  confidence: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Results {
+  video_link: string;
+  resume_link: string;
+  motivation_letter: string;
+  transcription: string;
+  personality_models: PersonalityModel[];
+  created_at: string;
+  updated_at: string;
+}
+
 const PersonPage = () => {
-  const [videoFile, setVideoFile] = useState(null);
-  const [videoFileForCheck, setvideoFileForCheck] = useState(null);
-  const [resumeFile, setResumeFile] = useState(null);
-  const [coverLetter, setCoverLetter] = useState('');
+  const [videoFile, setVideoFile] = useState<Blob | null>(null);
+  const [videoFileForCheck, setVideoFileForCheck] = useState<string | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [coverLetter, setCoverLetter] = useState<string>('');
   const toast = useToast();
-  const [results, setResults] = useState({
+  const [results, setResults] = useState<Results | null>({
     video_link: 'https://example.com/video.mp4',
     resume_link: 'https://example.com/resume.pdf',
     motivation_letter: 'This is a sample motivation letter.',
@@ -47,18 +66,18 @@ const PersonPage = () => {
     updated_at: '2024-11-09T21:58:57.223Z',
   });
 
-  const handleVideoUpload = (event) => {
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const videoBlob = new Blob([file], { type: file.type });
       setVideoFile(videoBlob);
       const blobUrl = URL.createObjectURL(videoBlob);
-      setvideoFileForCheck(blobUrl);
+      setVideoFileForCheck(blobUrl);
     }
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       setResumeFile(file);
     }
@@ -69,9 +88,7 @@ const PersonPage = () => {
       const formData = new FormData();
       if (resumeFile) formData.append('pdf_file', resumeFile);
       if (videoFile) formData.append('video_file', videoFile);
-      if (coverLetter === null) {
-        formData.append('motivation_letter', '');
-      } formData.append('motivation_letter', 'coverLetter');
+      formData.append('motivation_letter', coverLetter || '');
 
       const response = await store.uploadCandidateData(formData);
       setResults(response);
@@ -94,27 +111,26 @@ const PersonPage = () => {
 
   useEffect(() => {
     return () => {
-      if (videoFile) {
-        URL.revokeObjectURL(videoFile);
+      if (videoFileForCheck) {
+        URL.revokeObjectURL(videoFileForCheck);
       }
     };
-  }, [videoFile]);
+  }, [videoFileForCheck]);
 
-
-  const groupedModels = results.personality_models.reduce((acc, model) => {
+  const groupedModels = results?.personality_models.reduce((acc: Record<string, { parameter: string; confidence: number }[]>, model) => {
     if (!acc[model.model]) {
       acc[model.model] = [];
     }
     acc[model.model].push({ parameter: model.parameter, confidence: model.confidence });
     return acc;
-  }, {});
+  }, {}) || {};
 
   return (
     <Layout>
       <Header />
-      <Box p={6} boxShadow="lg"  m="auto" mt={16} mb={10}>
-      <Accordion allowToggle width="100%">
-          <AccordionItem isExpanded={!results}>
+      <Box p={6} boxShadow="lg" m="auto" mt={16} mb={10}>
+        <Accordion allowToggle width="100%">
+          <AccordionItem>
             <AccordionButton>
               <Box flex="1" textAlign="left">
                 Загрузите ваши материалы
@@ -126,7 +142,7 @@ const PersonPage = () => {
                 <Box width="100%" height="300px" border="1px solid #ccc" borderRadius="md" p={4} display="flex" justifyContent="center" alignItems="center" overflow="hidden">
                   {videoFileForCheck ? (
                     <video controls style={{ maxWidth: '100%', maxHeight: '100%' }}>
-                      <source src={videoFileForCheck} type={videoFile?.type} />
+                      <source src={videoFileForCheck} type={videoFile?.type || ''} />
                       Your browser does not support the video tag.
                     </video>
                   ) : (
@@ -168,7 +184,7 @@ const PersonPage = () => {
           </AccordionItem>
 
           {results && (
-            <AccordionItem isExpanded>
+            <AccordionItem>
               <AccordionButton>
                 <Box flex="1" textAlign="left">
                   Результаты

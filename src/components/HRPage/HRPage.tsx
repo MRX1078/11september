@@ -16,6 +16,14 @@ type PersonalityModel = {
   updated_at: string;
 };
 
+type Vacancy = {
+  id: string;
+  title: string;
+  description: string;
+  salary: number;
+  personality_models: PersonalityModel[];
+};
+
 type Candidate = {
   id: string;
   personality_models: PersonalityModel[];
@@ -31,12 +39,6 @@ type Filter = {
   threshold: number;
 };
 
-interface FilterModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  handleFilterCandidates: (filteredList: Candidate[]) => void;
-  personalityList: Candidate[];
-}
 
 const HRPage = () => {
   const [personalityList, setPersonalityList] = useState([]);
@@ -243,7 +245,7 @@ const HRPage = () => {
             <AccordionPanel pb={4}>
               <VStack spacing={6} align="stretch">
                 {vacancyList.length > 0 ? (
-                  vacancyList.map((vacancy, index) => (
+                  vacancyList.map((vacancy:Vacancy, index) => (
                     <Box key={vacancy.id} p={4} border="1px solid #ccc" borderRadius="md" bg="gray.50">
                       <VStack align="flex-start" spacing={4}>
                         <HStack>
