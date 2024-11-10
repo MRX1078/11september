@@ -61,6 +61,32 @@ const HRPage = () => {
   const toast = useToast();
   const [availableParameters, setAvailableParameters] = useState([]);
 
+
+  const generateMailtoLink = (type: string) => {
+    if (type === 'INTJ') {
+      const subject = encodeURIComponent("Приглашение на собеседование");
+      const body = encodeURIComponent(`
+        Уважаемый кандидат,
+  
+        Мы рады пригласить вас на собеседование на позицию, соответствующую вашему типу личности INTJ.
+        Мы ценим ваше стратегическое мышление, решительность и склонность к анализу, что прекрасно
+        сочетается с требованиями нашей команды.
+  
+        На собеседовании мы обсудим ваши цели, подходы к решению задач и проекты, в которых вы 
+        проявили свои сильные стороны. Ваше умение находить инновационные решения и видеть общую 
+        картину особенно важно для нас.
+  
+        Пожалуйста, подтвердите свое участие, ответив на это письмо. Мы с нетерпением ждем возможности 
+        встретиться с вами и обсудить, как вы можете внести вклад в наш успех.
+  
+        С уважением,
+        Команда HR
+      `);
+      return `mailto:?subject=${subject}&body=${body}`;
+    }
+    return '';
+  };
+  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -76,10 +102,10 @@ const HRPage = () => {
           { id: '9', model: 'RIASEC', parameter: 'S', confidence: 0.6629, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' },
           { id: '10', model: 'RIASEC', parameter: 'E', confidence: 0.6489, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
           { id: '11', model: 'RIASEC', parameter: 'C', confidence: 0.6362, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
-          { id: '12', model: 'MBTI', parameter: 'IE', confidence: 0.6565, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
-          { id: '13', model: 'MBTI', parameter: 'SN', confidence: 0.4869, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
-          { id: '14', model: 'MBTI', parameter: 'TF', confidence: 0.5540, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
-          { id: '15', model: 'MBTI', parameter: 'JP', confidence: 0.5921, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' }
+          { id: '12', model: 'MBTI', parameter: 'IE', confidence: 0.4425, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+          { id: '13', model: 'MBTI', parameter: 'SN', confidence: 0.5235, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+          { id: '14', model: 'MBTI', parameter: 'TF', confidence: 0.2344, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+          { id: '15', model: 'MBTI', parameter: 'JP', confidence: 0.4256, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' }
         ];
   
         // Добавляем замоканные данные к personality_models для каждого кандидата
@@ -264,6 +290,15 @@ const HRPage = () => {
       <Text mt={2} fontWeight="bold">
         Тип личности: <Badge colorScheme="blue">INTJ</Badge>
       </Text>
+      <Button
+        colorScheme="teal"
+        mt={2}
+        as="a"
+        href={generateMailtoLink("INTJ")}
+        target="_blank"
+      >
+        Создать письмо кандидату
+      </Button>
     </>
   ) : (
     <Text>Нет данных для MBTI</Text>
