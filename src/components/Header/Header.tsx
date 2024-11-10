@@ -53,7 +53,7 @@ const Header = () => {
         
         <Button
           as={Link}
-          to="/hr"
+          to="/login"
           colorScheme={isActive("/hr") ? "blue" : "gray"}
           variant={isActive("/hr") ? "solid" : "ghost"}
           mx={2}

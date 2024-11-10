@@ -9,6 +9,7 @@ import PersonPage from './components/PersonPage/PersonPage'
 import AuthPage from './components/LoginPage/Login'
 import { createContext } from 'react';
 import Store from './store/store.ts';
+import HRPage from './components/HRPage/HRPage.tsx';
 
 const store = new Store();
 export const Context = createContext({
@@ -26,17 +27,19 @@ const router = createBrowserRouter([
     element: <PersonPage/>,
   },
   {
-    path: "/hr",
+    path: "/login",
     element: <AuthPage/>
+  },
+  {
+    path: "/hr",
+    element: <HRPage/>,
   }
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <Context.Provider value={{store}}>
-  <React.StrictMode>
   <ChakraProvider>
     <RouterProvider router={router} />
   </ChakraProvider>
-</React.StrictMode>,
 </Context.Provider>
 )

@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import  { useState } from 'react';
 import { Box, Button, Input, VStack, Heading, Text, useToast } from '@chakra-ui/react';
-import Store from '../../store/store';
+import Store from '../../store/store.ts';
 
 const store = new Store();
+
+import { useEffect } from 'react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -10,8 +12,13 @@ const Login = () => {
   const toast = useToast();
 
   const handleLogin = async () => {
+    if (localStorage.getItem('token')) {
+      window.location.href = '/hr';
+      return;
+    }
     try {
       await store.login(username, password);
+      window.location.href = '/hr';
       toast({
         title: 'Login successful.',
         status: 'success',
@@ -61,15 +68,18 @@ const Register = () => {
     try {
       await store.registration(username, password);
       toast({
-        title: 'Registration successful.',
+        title: 'Регистрация прошла успешно.',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
+      setTimeout(() => {
+         window.location.href = '/login'
+      }, 3000);
     } catch (e) {
       toast({
-        title: 'Registration failed.',
-        description: 'Please check your details and try again.',
+        title: 'Повторите попытку',
+        description: 'Проверьте введенные данные и попробуйте снова.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -101,7 +111,29 @@ const Register = () => {
 };
 
 const AuthPage = () => {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      window.location.href = '/hr';
+    } else {
+      setLoading(false);
+    }
+  }, []);
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      window.location.href = '/hr';
+    }
+  }, []);
   const [isLoginPage, setIsLoginPage] = useState(true);
+
+  if (loading) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Text>Loading...</Text>
+      </Box>
+    );
+  }
+
 
   return (
     <Box>
