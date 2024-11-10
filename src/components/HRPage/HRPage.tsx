@@ -208,7 +208,7 @@ const HRPage = () => {
                             {groupedModels['OCEAN'] ? (
                               groupedModels['OCEAN'].map((param: any, idx: number) => (
                                 <Badge key={idx} colorScheme="blue" mr={2}>
-                                  {param.parameter}: {param.confidence}
+                                  {param.parameter}: {param.confidence.toFixed(2)}
                                 </Badge>
                               ))
                             ) : (
@@ -223,7 +223,7 @@ const HRPage = () => {
       {/* Отображаем параметры MBTI */}
       {groupedModels['MBTI'].map((param: any, idx: number) => (
         <Badge key={idx} colorScheme="green" mr={2}>
-          {param.parameter}: {param.confidence}
+          {param.parameter}: {param.confidence.toFixed(2)}
         </Badge>
       ))}
       
