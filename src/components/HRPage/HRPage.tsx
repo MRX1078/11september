@@ -1,9 +1,9 @@
+//@ts-nocheck
 import { Box, Button, VStack, Text, HStack,Select,IconButton, Link, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Badge, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Input, Textarea, useToast } from '@chakra-ui/react';
 import Layout from '../../Layout';
 import Header from '../Header/Header';
 import { useState, useEffect } from 'react';
 import Store from '../../store/store';
-import CloseIcon  from '@chakra-ui/react';
 
 const store = new Store();
 
@@ -94,6 +94,21 @@ const HRPage = () => {
   const handleRemoveFilter = (index) => {
     const updatedFilters = filters.filter((_, i) => i !== index);
     setFilters(updatedFilters);
+  };
+
+  const applyFilters = () => {
+    const filteredList = personalityList.filter(candidate => {
+      return filters.every(filter => {
+        return candidate.personality_models.some(model => {
+          return (
+            model.model === filter.model &&
+            model.parameter.toLowerCase() === filter.parameter.toLowerCase() &&
+            model.confidence >= filter.threshold
+          );
+        });
+      });
+    });
+    setPersonalityList(filteredList); // Обновляем список кандидатов после применения фильтров
   };
 
 
@@ -279,7 +294,6 @@ const HRPage = () => {
                     <Badge colorScheme="teal">{filter.parameter}</Badge>
                     <Badge colorScheme="orange">{`> ${filter.threshold}`}</Badge>
                     <IconButton
-                      icon={<CloseIcon />}
                       size="sm"
                       onClick={() => handleRemoveFilter(index)}
                       aria-label="Удалить фильтр"
@@ -291,7 +305,7 @@ const HRPage = () => {
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={() => handleFilterCandidates(filters)}>
+          <Button colorScheme="blue" mr={3} onClick={() => applyFilters()}>
             Применить фильтр
           </Button>
           <Button variant="ghost" onClick={onFilterClose}>Отмена</Button>

@@ -1,14 +1,14 @@
-import * as React from 'react'
 import { ChakraProvider } from '@chakra-ui/react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import {
   createBrowserRouter,
   RouterProvider} from "react-router-dom";
-import PersonPage from './components/PersonPage/PersonPage'
-import AuthPage from './components/LoginPage/Login'
+import PersonPage from './components/PersonPage/PersonPage.tsx'
+import AuthPage from './components/LoginPage/Login.tsx'
 import { createContext } from 'react';
 import Store from './store/store.ts';
+//ts-ignore
 import HRPage from './components/HRPage/HRPage.tsx';
 
 const store = new Store();
