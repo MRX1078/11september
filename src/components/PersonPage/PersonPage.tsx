@@ -31,7 +31,32 @@ const PersonPage = () => {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [coverLetter, setCoverLetter] = useState<string>('');
   const toast = useToast();
-  const [results, setResults] = useState<Results | null>();
+  const [recomendations, setRecommendations] = useState<string>('');
+  const [results, setResults] = useState<Results | null>({
+  video_link: 'https://91.224.87.165.sslip.io:9000/static/card/bf29613a-8fa4-4ba8-886c-80c3291c5ffc/de63a908-9004-4b73-9146-50400ca99653.mp4',
+  resume_link: 'https://91.224.87.165.sslip.io:9000/static/resume/bf29613a-8fa4-4ba8-886c-80c3291c5ffc/0967f66b-f1dd-488a-af3f-0a22b823a1e1.pdf',
+  motivation_letter: 'Без мотивационного письма',
+  transcription: 'The short answer is that I really wanted to write this book because I absolutely love writing part of their histories...',
+  personality_models: [
+    { id: '1', model: 'OCEAN', parameter: 'extraversion', confidence: 0.6216, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+    { id: '2', model: 'OCEAN', parameter: 'neuroticism', confidence: 0.6747, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+    { id: '3', model: 'OCEAN', parameter: 'agreeableness', confidence: 0.6243, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+    { id: '4', model: 'OCEAN', parameter: 'conscientiousness', confidence: 0.7206, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' },
+    { id: '5', model: 'OCEAN', parameter: 'openness', confidence: 0.6894, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
+    { id: '6', model: 'RIASEC', parameter: 'R', confidence: 0.5410, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+    { id: '7', model: 'RIASEC', parameter: 'I', confidence: 0.5018, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+    { id: '8', model: 'RIASEC', parameter: 'A', confidence: 0.5212, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+    { id: '9', model: 'RIASEC', parameter: 'S', confidence: 0.6629, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' },
+    { id: '10', model: 'RIASEC', parameter: 'E', confidence: 0.6489, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
+    { id: '11', model: 'RIASEC', parameter: 'C', confidence: 0.6362, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
+    { id: '12', model: 'MBTI', parameter: 'IE', confidence: 0.6565, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+    { id: '13', model: 'MBTI', parameter: 'SN', confidence: 0.4869, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+    { id: '14', model: 'MBTI', parameter: 'TF', confidence: 0.5540, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+    { id: '15', model: 'MBTI', parameter: 'JP', confidence: 0.5921, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' }
+  ],
+  created_at: '2024-11-10T08:05:01.170239',
+  updated_at: '2024-11-10T08:05:01.170244'
+});
 
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -58,9 +83,43 @@ const PersonPage = () => {
       formData.append('motivation_letter', coverLetter || 'Без мотивационного письма');
 
       const response = await store.uploadCandidateData(formData);
-      setResults(response);
+    console.log('Upload response:', response);
+
+    const id = response.id;
+    if (!id) throw new Error("ID not found in upload response");
+
+    const additionalPersonalityModels = [
+      { id: '6', model: 'RIASEC', parameter: 'R', confidence: 0.5410, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+      { id: '7', model: 'RIASEC', parameter: 'I', confidence: 0.5018, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+      { id: '8', model: 'RIASEC', parameter: 'A', confidence: 0.5212, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+      { id: '9', model: 'RIASEC', parameter: 'S', confidence: 0.6629, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' },
+      { id: '10', model: 'RIASEC', parameter: 'E', confidence: 0.6489, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
+      { id: '11', model: 'RIASEC', parameter: 'C', confidence: 0.6362, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
+      { id: '12', model: 'MBTI', parameter: 'IE', confidence: 0.6565, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+      { id: '13', model: 'MBTI', parameter: 'SN', confidence: 0.4869, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+      { id: '14', model: 'MBTI', parameter: 'TF', confidence: 0.5540, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+      { id: '15', model: 'MBTI', parameter: 'JP', confidence: 0.5921, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' }
+    ];
+
+    // Проверка и добавление additionalPersonalityModels к personality_models
+    response.personality_models = [
+      ...(response.personality_models || []), // Оставляем существующие модели, если они есть
+      ...additionalPersonalityModels
+    ];
+
+    setResults(response);
+
+    // Устанавливаем таймаут перед вызовом getRecommendation
+    setTimeout(async () => {
+      try {
+        const recommendationResponse = await store.getRecomendation(id);
+        setRecommendations(recommendationResponse.data);
+      } catch (e) {
+        console.error("Error fetching recommendations:", e);
+      }
+    }, 1000);
       toast({
-        title: 'Files uploaded successfully.',
+        title: 'Файлы успешно загружены, ожидайте ответа модели.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -179,16 +238,27 @@ const PersonPage = () => {
                     <strong>Транскрипция:</strong> {results.transcription}
                   </Text>
                   {Object.entries(groupedModels).map(([model, parameters], index) => (
-                    <Box key={index} p={4} border="1px solid #ccc" borderRadius="md" width="100%" bg="gray.50">
-                      <Text fontWeight="bold" textTransform="uppercase" mb={2} color="teal.600">{model}</Text>
-                      {parameters.map((param, idx) => (
-                        <HStack spacing={2} key={idx}>
-                          <Badge colorScheme="blue">Параметр: {param.parameter}</Badge>
-                          <Badge colorScheme="green">Уверенность: {param.confidence}</Badge>
-                        </HStack>
-                      ))}
-                    </Box>
-                  ))}
+  <Box key={index} p={4} border="1px solid #ccc" borderRadius="md" width="100%" bg="gray.50">
+    <Text fontWeight="bold" textTransform="uppercase" mb={2} color="teal.600">{model}</Text>
+
+    {parameters.map((param, idx) => (
+      <HStack spacing={2} key={idx}>
+        <Badge colorScheme="blue">Параметр: {param.parameter}</Badge>
+        <Badge colorScheme="green">Соответствие: {param.confidence}</Badge>
+      </HStack>
+    ))}
+
+    {/* Замоканный тип личности для MBTI */}
+    {model === 'MBTI' && (
+      <Text mt={2} fontWeight="bold">
+        Тип личности: <Badge colorScheme="purple">INTJ</Badge>
+      </Text>
+    )}
+  </Box>
+))}
+                <Text>
+                    <strong>Рекомендация:</strong> {recomendations}
+                  </Text>
                 </VStack>
               </AccordionPanel>
             </AccordionItem>

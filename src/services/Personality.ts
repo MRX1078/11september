@@ -14,4 +14,7 @@ export default class Personality {
     static async getVacancyList(limit: number, offset: number): Promise<any> {
         return api.get(`/vacancy/`, {params:{limit, offset}});
     }
+    static async getRecomendation(id: string): Promise<any> {
+        return api.get(`/cardadvice/${id}`);
+    }
 }

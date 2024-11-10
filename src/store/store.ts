@@ -85,4 +85,13 @@ export default class Store {
             console.log('Error get vacancy list', e);
         }
     }
+
+    async getRecomendation(id: string){
+        try {
+            const response = await Personality.getRecomendation(id);
+            return response;
+        } catch(e) {
+            console.log('Error get recommendation', e);
+        }
+    }
 }

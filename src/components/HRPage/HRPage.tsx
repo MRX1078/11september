@@ -40,6 +40,7 @@ type Filter = {
 };
 
 
+
 const HRPage = () => {
   const [personalityList, setPersonalityList] = useState([]);
   const [vacancyList, setVacancyList] = useState([]);
@@ -63,11 +64,29 @@ const HRPage = () => {
           store.getVacancyList(100, 0),
         ]);
 
-        // Сортируем список кандидатов по полю created_at
-        const sortedPersonalityList = personalityRes.sort(
-          // @ts-ignore
-          (a: Candidate, b: Candidate) => new Date(a.created_at) - new Date(b.created_at)
-        );
+        const additionalPersonalityModels = [
+          { id: '6', model: 'RIASEC', parameter: 'R', confidence: 0.5410, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+          { id: '7', model: 'RIASEC', parameter: 'I', confidence: 0.5018, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+          { id: '8', model: 'RIASEC', parameter: 'A', confidence: 0.5212, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+          { id: '9', model: 'RIASEC', parameter: 'S', confidence: 0.6629, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' },
+          { id: '10', model: 'RIASEC', parameter: 'E', confidence: 0.6489, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
+          { id: '11', model: 'RIASEC', parameter: 'C', confidence: 0.6362, created_at: '2024-11-10T08:05:01.198852', updated_at: '2024-11-10T08:05:01.198854' },
+          { id: '12', model: 'MBTI', parameter: 'IE', confidence: 0.6565, created_at: '2024-11-10T08:05:01.179114', updated_at: '2024-11-10T08:05:01.179117' },
+          { id: '13', model: 'MBTI', parameter: 'SN', confidence: 0.4869, created_at: '2024-11-10T08:05:01.185805', updated_at: '2024-11-10T08:05:01.185808' },
+          { id: '14', model: 'MBTI', parameter: 'TF', confidence: 0.5540, created_at: '2024-11-10T08:05:01.190351', updated_at: '2024-11-10T08:05:01.190353' },
+          { id: '15', model: 'MBTI', parameter: 'JP', confidence: 0.5921, created_at: '2024-11-10T08:05:01.194382', updated_at: '2024-11-10T08:05:01.194384' }
+        ];
+  
+        // Добавляем замоканные данные к personality_models для каждого кандидата
+        const sortedPersonalityList = personalityRes
+          .map((candidate: Candidate) => ({
+            ...candidate,
+            personality_models: [
+              ...(candidate.personality_models || []),
+              ...additionalPersonalityModels
+            ]
+          }))
+          .sort((a: Candidate, b: Candidate) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
         setPersonalityList(sortedPersonalityList);
         setVacancyList(vacancyRes);
       } catch (err) {
@@ -198,17 +217,25 @@ const HRPage = () => {
                           </Box>
 
                           <Box>
-                            <Text fontWeight="bold">Модели MBTI:</Text>
-                            {groupedModels['MBTI'] ? (
-                              groupedModels['MBTI'].map((param: any, idx: number) => (
-                                <Badge key={idx} colorScheme="green" mr={2}>
-                                  {param.parameter}: {param.confidence}
-                                </Badge>
-                              ))
-                            ) : (
-                              <Text>Нет данных для MBTI</Text>
-                            )}
-                          </Box>
+  <Text fontWeight="bold">Модели MBTI:</Text>
+  {groupedModels['MBTI'] ? (
+    <>
+      {/* Отображаем параметры MBTI */}
+      {groupedModels['MBTI'].map((param: any, idx: number) => (
+        <Badge key={idx} colorScheme="green" mr={2}>
+          {param.parameter}: {param.confidence}
+        </Badge>
+      ))}
+      
+      {/* Замоканный тип личности */}
+      <Text mt={2} fontWeight="bold">
+        Тип личности: <Badge colorScheme="blue">INTJ</Badge>
+      </Text>
+    </>
+  ) : (
+    <Text>Нет данных для MBTI</Text>
+  )}
+</Box>
 
                           <Box>
                             <Text fontWeight="bold">Видео:</Text>
