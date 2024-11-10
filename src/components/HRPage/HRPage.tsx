@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { Box, Button, VStack, Text, HStack,Select,IconButton, Link, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Badge, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Input, Textarea, useToast } from '@chakra-ui/react';
 import Layout from '../../Layout';
 import Header from '../Header/Header';
@@ -7,6 +6,38 @@ import Store from '../../store/store';
 
 const store = new Store();
 
+
+type PersonalityModel = {
+  id: string;
+  model: string;
+  parameter: string;
+  confidence: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type Candidate = {
+  id: string;
+  personality_models: PersonalityModel[];
+  video_link: string;
+  resume_link: string;
+  created_at: string;
+  updated_at: string;
+};
+
+type Filter = {
+  model: string;
+  parameter: string;
+  threshold: number;
+};
+
+interface FilterModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  handleFilterCandidates: (filteredList: Candidate[]) => void;
+  personalityList: Candidate[];
+}
+
 const HRPage = () => {
   const [personalityList, setPersonalityList] = useState([]);
   const [vacancyList, setVacancyList] = useState([]);
@@ -14,11 +45,11 @@ const HRPage = () => {
   const { isOpen: isFilterOpen, onOpen: onFilterOpen, onClose: onFilterClose } = useDisclosure();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [salary, setSalary] = useState(0);
+  const [salary, setSalary] = useState<number>(0);
   const [selectedModel, setSelectedModel] = useState('');
   const [selectedParameter, setSelectedParameter] = useState('');
   const [threshold, setThreshold] = useState(0);
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
   const toast = useToast();
   const [availableParameters, setAvailableParameters] = useState([]);
 
@@ -32,7 +63,8 @@ const HRPage = () => {
 
         // Сортируем список кандидатов по полю created_at
         const sortedPersonalityList = personalityRes.sort(
-          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+          // @ts-ignore
+          (a: Candidate, b: Candidate) => new Date(a.created_at) - new Date(b.created_at)
         );
         setPersonalityList(sortedPersonalityList);
         setVacancyList(vacancyRes);
@@ -67,14 +99,15 @@ const HRPage = () => {
 
   useEffect(() => {
     if (selectedModel) {
-      const parameters = new Set();
-      personalityList.forEach(candidate => {
-        candidate.personality_models.forEach(model => {
+      const parameters = new Set<string>();
+      personalityList.forEach((candidate: Candidate) => {
+        candidate.personality_models.forEach((model: PersonalityModel) => {
           if (model.model === selectedModel) {
             parameters.add(model.parameter);
           }
         });
       });
+      // @ts-ignore
       setAvailableParameters(Array.from(parameters));
     } else {
       setAvailableParameters([]);
@@ -82,8 +115,8 @@ const HRPage = () => {
   }, [selectedModel, personalityList]);
 
   const handleAddFilter = () => {
-    if (selectedModel && selectedParameter && threshold !== '') {
-      const newFilter = { model: selectedModel, parameter: selectedParameter, threshold: parseFloat(threshold) };
+    if (selectedModel && selectedParameter && threshold !== null) {
+      const newFilter = { model: selectedModel, parameter: selectedParameter, threshold: parseFloat(threshold.toString()) };
       setFilters([...filters, newFilter]);
       setSelectedModel('');
       setSelectedParameter('');
@@ -91,13 +124,13 @@ const HRPage = () => {
     }
   };
 
-  const handleRemoveFilter = (index) => {
+  const handleRemoveFilter = (index:number) => {
     const updatedFilters = filters.filter((_, i) => i !== index);
     setFilters(updatedFilters);
   };
 
   const applyFilters = () => {
-    const filteredList = personalityList.filter(candidate => {
+    const filteredList = personalityList.filter((candidate: Candidate) => {
       return filters.every(filter => {
         return candidate.personality_models.some(model => {
           return (
@@ -132,9 +165,9 @@ const HRPage = () => {
             <AccordionPanel pb={4}>
               <VStack spacing={6} align="stretch">
                 {personalityList.length > 0 ? (
-                  personalityList.map((candidate, index) => {
+                  personalityList.map((candidate:Candidate, index:number) => {
                     // Группируем параметры по моделям OCEAN и MBTI
-                    const groupedModels = candidate.personality_models.reduce((acc, model) => {
+                    const groupedModels = candidate.personality_models.reduce((acc: any, model: PersonalityModel)  => {
                       if (!acc[model.model]) {
                         acc[model.model] = [];
                       }
@@ -152,7 +185,7 @@ const HRPage = () => {
                           <Box>
                             <Text fontWeight="bold">Модели OCEAN:</Text>
                             {groupedModels['OCEAN'] ? (
-                              groupedModels['OCEAN'].map((param, idx) => (
+                              groupedModels['OCEAN'].map((param: any, idx: number) => (
                                 <Badge key={idx} colorScheme="blue" mr={2}>
                                   {param.parameter}: {param.confidence}
                                 </Badge>
@@ -165,7 +198,7 @@ const HRPage = () => {
                           <Box>
                             <Text fontWeight="bold">Модели MBTI:</Text>
                             {groupedModels['MBTI'] ? (
-                              groupedModels['MBTI'].map((param, idx) => (
+                              groupedModels['MBTI'].map((param: any, idx: number) => (
                                 <Badge key={idx} colorScheme="green" mr={2}>
                                   {param.parameter}: {param.confidence}
                                 </Badge>
