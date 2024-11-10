@@ -31,40 +31,7 @@ const PersonPage = () => {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [coverLetter, setCoverLetter] = useState<string>('');
   const toast = useToast();
-  const [results, setResults] = useState<Results | null>({
-    video_link: 'https://example.com/video.mp4',
-    resume_link: 'https://example.com/resume.pdf',
-    motivation_letter: 'This is a sample motivation letter.',
-    transcription: 'This is a sample transcription of the video.',
-    personality_models: [
-      {
-        id: '1',
-        model: 'OCEAN',
-        parameter: 'Openness',
-        confidence: 0.85,
-        created_at: '2024-11-09T21:58:57.223Z',
-        updated_at: '2024-11-09T21:58:57.223Z',
-      },
-      {
-        id: '2',
-        model: 'OCEAN',
-        parameter: 'Conscientiousness',
-        confidence: 0.75,
-        created_at: '2024-11-09T21:58:57.223Z',
-        updated_at: '2024-11-09T21:58:57.223Z',
-      },
-      {
-        id: '3',
-        model: 'MBTI',
-        parameter: 'INTJ',
-        confidence: 0.90,
-        created_at: '2024-11-09T21:58:57.223Z',
-        updated_at: '2024-11-09T21:58:57.223Z',
-      },
-    ],
-    created_at: '2024-11-09T21:58:57.223Z',
-    updated_at: '2024-11-09T21:58:57.223Z',
-  });
+  const [results, setResults] = useState<Results | null>();
 
   const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
